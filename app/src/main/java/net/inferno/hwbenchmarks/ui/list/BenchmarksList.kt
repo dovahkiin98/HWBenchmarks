@@ -57,12 +57,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -166,10 +162,15 @@ fun BenchmarksList(
                         )
                     },
                     actions = {
-                        PlainTooltipBox(tooltip = {
-                            Text("Sort")
-                        }) {
-                            Box {
+                        PlainTooltipBox(
+                            tooltip = {
+                                Text("Sort")
+                            }
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .tooltipAnchor(),
+                            ) {
                                 IconButton(
                                     onClick = {
                                         showSortPopup = true
@@ -233,9 +234,11 @@ fun BenchmarksList(
                             }
                         }
 
-                        PlainTooltipBox(tooltip = {
-                            Text("Search")
-                        }) {
+                        PlainTooltipBox(
+                            tooltip = {
+                                Text("Search")
+                            }
+                        ) {
                             IconButton(
                                 onClick = {
                                     searchStarted = true
@@ -244,6 +247,8 @@ fun BenchmarksList(
                                         searchBoxFocus.requestFocus()
                                     }
                                 },
+                                modifier = Modifier
+                                    .tooltipAnchor(),
                             ) {
                                 Icon(Icons.Default.Search, "Search")
                             }
