@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option java_package = "net.inferno.hwbenchmarks.model";
+option java_multiple_files = true;
+
+message BenchmarkModel {
+  string name = 1;
+  string link = 2;
+  int32 benchmark = 3;
+  int32 rank = 4;
+}
+
+message BenchmarkModelList {
+  repeated BenchmarkModel items = 1;
+}
