@@ -384,7 +384,7 @@ fun SearchBoxTopAppBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick =  {
+            IconButton(onClick = {
                 onCloseSearch()
             }) {
                 Icon(Icons.Default.ArrowBack, null)

@@ -2,8 +2,19 @@ package net.inferno.hwbenchmarks.ui.list
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +30,6 @@ import net.inferno.hwbenchmarks.model.BenchmarkModel
 import net.inferno.hwbenchmarks.theme.AppTheme
 import kotlin.random.Random
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BenchmarkItem(
     benchmark: BenchmarkModel,
@@ -36,7 +46,7 @@ fun BenchmarkItem(
             defaultElevation = 2.dp,
         ),
         colors = CardDefaults.cardColors(
-          containerColor =   MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surface,
         ),
     ) {
         Column(
@@ -110,7 +120,7 @@ class BenchmarkProvider : PreviewParameterProvider<BenchmarkModel> {
                 yield(
                     BenchmarkModel(
                         Random.nextInt(1, 10),
-                         "Intel Core i5 8600k",
+                        "Intel Core i5 8600k",
                         Random.nextInt(200, 1_000),
                         Random.nextInt(1, 10),
                         BenchmarkModel.Type.CPUS,

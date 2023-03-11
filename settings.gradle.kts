@@ -1,3 +1,5 @@
+@file:SuppressWarnings("INCUBATING")
+
 pluginManagement  {
     repositories {
         gradlePluginPortal()

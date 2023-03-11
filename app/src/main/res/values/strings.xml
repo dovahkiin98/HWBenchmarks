@@ -2,7 +2,6 @@
     <string name="app_name">Benchmarks</string>
 
     <string name="nav_single_cpu">Single CPUs</string>
-    <string name="nav_multi_cpu">Multi CPUs</string>
     <string name="nav_gpu">GPUs</string>
 
     <string name="request_error">An error has occurred while requesting data, try again</string>
