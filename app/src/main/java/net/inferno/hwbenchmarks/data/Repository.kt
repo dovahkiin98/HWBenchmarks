@@ -2,6 +2,7 @@ package net.inferno.hwbenchmarks.data
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.withTimeout
 import net.inferno.hwbenchmarks.data.source.LocalDataSource
 import net.inferno.hwbenchmarks.data.source.RemoteDataSource
 import net.inferno.hwbenchmarks.model.BenchmarkModel
@@ -16,8 +17,10 @@ class Repository @Inject constructor(
     private val localSource = LocalDataSource(context)
 
     suspend fun getBenchmarks(type: BenchmarkModel.Type) = localSource.getBenchmarks(type).ifEmpty {
-        remoteSource.getBenchmarks(type).also {
-            localSource.saveData(type, it)
+        withTimeout(8_000) {
+            remoteSource.getBenchmarks(type).also {
+                localSource.saveData(type, it)
+            }
         }
     }
 }

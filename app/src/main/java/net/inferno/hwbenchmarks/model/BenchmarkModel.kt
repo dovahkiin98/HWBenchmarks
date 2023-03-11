@@ -4,10 +4,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 open class BenchmarkModel(
+    val id: Int,
     val name: String,
-    val link: String,
     val benchmark: Int,
     val rank: Int,
+    val type: Type,
 ) {
 
     enum class Type {

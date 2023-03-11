@@ -1,5 +1,6 @@
 package net.inferno.hwbenchmarks.data.source
 
+import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.inferno.hwbenchmarks.model.BenchmarkModel
@@ -16,11 +17,15 @@ class RemoteDataSource : DataSource {
 
         val benchmarks = tables.map {
             val td = it.getElementsByTag("td")
+
+            val link = Uri.parse(td[0].getElementsByTag("a")[0].attr("href"))
+
             BenchmarkModel(
-                td[0].getElementsByTag("a")[0].text(),
-                td[0].getElementsByTag("a")[0].attr("href"),
-                td[1].text().replace(",", "").toInt(),
-                td[2].text().replace(",", "").toInt()
+                id = link.getQueryParameter("id")!!.toInt(),
+                name = td[0].getElementsByTag("a")[0].text(),
+                benchmark = td[1].text().replace(",", "").toInt(),
+                rank = td[2].text().replace(",", "").toInt(),
+                type = BenchmarkModel.Type.CPUS,
             )
         }
 
@@ -38,11 +43,15 @@ class RemoteDataSource : DataSource {
 
         val benchmarks = tables.map {
             val td = it.getElementsByTag("td")
+
+            val link = Uri.parse(td[0].getElementsByTag("a")[0].attr("href"))
+
             BenchmarkModel(
-                td[0].getElementsByTag("a")[0].text(),
-                td[0].getElementsByTag("a")[0].attr("href"),
-                td[1].text().replace(",", "").toInt(),
-                td[2].text().replace(",", "").toInt()
+                id = link.getQueryParameter("id")!!.toInt(),
+                name = td[0].getElementsByTag("a")[0].text(),
+                benchmark = td[1].text().replace(",", "").toInt(),
+                rank = td[2].text().replace(",", "").toInt(),
+                type = BenchmarkModel.Type.GPUS,
             )
         }
 

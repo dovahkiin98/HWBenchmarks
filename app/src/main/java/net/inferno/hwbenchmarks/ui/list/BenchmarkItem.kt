@@ -109,10 +109,11 @@ class BenchmarkProvider : PreviewParameterProvider<BenchmarkModel> {
             repeat(5) {
                 yield(
                     BenchmarkModel(
-                        "Intel Core i5 8600k",
-                        "",
+                        Random.nextInt(1, 10),
+                         "Intel Core i5 8600k",
                         Random.nextInt(200, 1_000),
-                        Random.nextInt(1, 10)
+                        Random.nextInt(1, 10),
+                        BenchmarkModel.Type.CPUS,
                     )
                 )
             }

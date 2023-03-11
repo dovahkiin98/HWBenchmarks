@@ -4,11 +4,9 @@ import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidthIn
@@ -20,13 +18,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -63,24 +59,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.inferno.hwbenchmarks.R
 import net.inferno.hwbenchmarks.data.UIState
 import net.inferno.hwbenchmarks.model.BenchmarkModel
 import net.inferno.hwbenchmarks.theme.AppTheme
+import net.inferno.hwbenchmarks.view.ErrorView
+import net.inferno.hwbenchmarks.view.LoadingView
+import net.inferno.hwbenchmarks.view.NetworkErrorView
 
 @Composable
 fun BenchmarksListUI(
-    modifier: Modifier = Modifier,
+    navController: NavController,
     benchmarksType: BenchmarkModel.Type,
+    modifier: Modifier = Modifier,
     viewModel: BenchmarksViewModel = hiltViewModel(key = benchmarksType.toString()),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -106,6 +106,9 @@ fun BenchmarksListUI(
         },
         onApplySearch = {
             viewModel.applyFilters(it)
+        },
+        onX = {
+            navController.navigate("test")
         }
     )
 }
@@ -127,6 +130,7 @@ fun BenchmarksList(
     onCloseSearch: () -> Unit = {},
     onSetSortValue: (Int) -> Unit = {},
     onApplySearch: (String) -> Unit = {},
+    onX: () -> Unit = {},
 ) {
     var searchStarted by rememberSaveable { mutableStateOf(false) }
     val searchBoxFocus = remember { FocusRequester() }
@@ -255,13 +259,17 @@ fun BenchmarksList(
                         }
                     },
                     scrollBehavior = topAppBarScrollBehavior,
+                    modifier = Modifier
+                        .clickable {
+                            onX()
+                        }
                 )
             } else {
                 SearchBoxTopAppBar(
                     searchTextValue = searchTextValue,
                     onApplySearch = onApplySearch,
                     focusRequester = searchBoxFocus,
-                    onCloseSearch = onCloseSearch,
+                    onCloseSearch = closeSearch,
                 )
             }
         },
@@ -282,7 +290,7 @@ fun BenchmarksList(
                 ) {
                     val benchmarks = uiState.data
 
-                    items(benchmarks, key = { it.rank }) {
+                    items(benchmarks, key = { it.id }) {
                         BenchmarkItem(
                             it,
                             modifier = Modifier
@@ -294,9 +302,9 @@ fun BenchmarksList(
 
                 is UIState.Error -> {
                     if (uiState.isNetwork) {
-                        NetworkErrorView(onRetry, modifier)
+                        NetworkErrorView(onRetry, error = uiState.error, modifier = modifier)
                     } else {
-                        ErrorView(onRetry, modifier)
+                        ErrorView(onRetry, error = uiState.error, modifier = modifier)
                     }
                 }
             }
@@ -376,7 +384,9 @@ fun SearchBoxTopAppBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = onCloseSearch) {
+            IconButton(onClick =  {
+                onCloseSearch()
+            }) {
                 Icon(Icons.Default.ArrowBack, null)
             }
         },
@@ -384,82 +394,6 @@ fun SearchBoxTopAppBar(
             containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
         ),
     )
-}
-
-@Composable
-fun ErrorView(
-    retry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .padding(16.dp)
-            .fillMaxSize(),
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = stringResource(id = R.string.request_error),
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(16.dp)
-            )
-
-            Button(
-                onClick = retry,
-            ) {
-                Text(stringResource(id = R.string.retry))
-            }
-        }
-    }
-}
-
-@Composable
-fun NetworkErrorView(
-    retry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .padding(16.dp)
-            .fillMaxSize(),
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = stringResource(id = R.string.request_network_error),
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(8.dp)
-            )
-
-            Button(
-                onClick = retry,
-            ) {
-                Text(stringResource(id = R.string.retry))
-            }
-        }
-    }
-}
-
-@Composable
-fun LoadingView(
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .padding(32.dp)
-            .fillMaxSize(),
-    ) {
-        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-    }
 }
 
 @Preview(
@@ -475,16 +409,18 @@ fun BenchmarksListPreviewSuccess() {
             UIState.Success(
                 listOf(
                     BenchmarkModel(
+                        id = 2,
                         name = "Intel i5 11600K",
                         rank = 2,
                         benchmark = 2000,
-                        link = "",
+                        type = BenchmarkModel.Type.CPUS,
                     ),
                     BenchmarkModel(
+                        id = 1,
                         name = "Intel i7 11700K",
                         rank = 1,
                         benchmark = 3000,
-                        link = "",
+                        type = BenchmarkModel.Type.CPUS,
                     )
                 )
             ),
@@ -535,15 +471,14 @@ fun BenchmarksListPreviewFailure() {
 fun BenchmarksListPreviewFailureNetwork() {
     AppTheme {
         BenchmarksList(
-            UIState.Error(Exception("Network Exception"), isNetwork = false),
+            UIState.Error(Exception("Network Exception"), isNetwork = true),
             benchmarksType = BenchmarkModel.Type.CPUS,
         )
     }
 }
 
 @Composable
-fun BenchmarkModel.Type.getPageTitle() =
-    when (this) {
-        BenchmarkModel.Type.CPUS -> stringResource(id = R.string.nav_single_cpu)
-        BenchmarkModel.Type.GPUS -> stringResource(id = R.string.nav_gpu)
-    }
+fun BenchmarkModel.Type.getPageTitle() = when (this) {
+    BenchmarkModel.Type.CPUS -> stringResource(id = R.string.nav_single_cpu)
+    BenchmarkModel.Type.GPUS -> stringResource(id = R.string.nav_gpu)
+}
